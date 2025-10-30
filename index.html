@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Hospital Management System</title>
+<!-- Google Fonts for better typography -->
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<header class="main-header">
+  <div class="header-content">
+    <i class="fas fa-hospital-alt"></i>
+    <h1>Hospital Management System</h1>
+  </div>
+</header>
+
+<!-- Main Login Page -->
+<div id="mainLogin" class="container">
+  <div class="login-wrapper">
+    <h2 class="welcome-title">Welcome to Healthcare Portal</h2>
+    <p class="welcome-subtitle">Please select your login type to continue</p>
+    
+    <div class="login-cards">
+      <div class="login-card" id="patientCard">
+        <div class="card-icon patient-icon">
+          <i class="fas fa-user-injured"></i>
+        </div>
+        <h3>Patient Portal</h3>
+        <p>Book appointments and manage your health records</p>
+        <button class="btn-primary" id="showPatientLogin">
+          <i class="fas fa-sign-in-alt"></i> Patient Login
+        </button>
+      </div>
+      
+      <div class="login-card" id="hospitalCard">
+        <div class="card-icon hospital-icon">
+          <i class="fas fa-user-md"></i>
+        </div>
+        <h3>Hospital Management</h3>
+        <p>Manage doctors, patients, and appointments</p>
+        <button class="btn-primary" id="showHospitalLogin">
+          <i class="fas fa-sign-in-alt"></i> Admin Login
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Patient Login Form -->
+  <div id="patientLoginDiv" class="login-form-container" style="display:none;">
+    <div class="login-form-card">
+      <button class="back-btn" onclick="backToMain()">
+        <i class="fas fa-arrow-left"></i> Back
+      </button>
+      <div class="form-header">
+        <i class="fas fa-user-injured"></i>
+        <h3>Patient Login</h3>
+      </div>
+      <form id="patientLoginForm">
+        <div class="form-group">
+          <label><i class="fas fa-user"></i> Username</label>
+          <input type="text" id="patientUsername" placeholder="Enter your username" required />
+        </div>
+        <div class="form-group">
+          <label><i class="fas fa-lock"></i> Password</label>
+          <input type="password" id="patientPassword" placeholder="Enter your password" required />
+        </div>
+        <button type="submit" class="form-btn">
+          <i class="fas fa-sign-in-alt"></i> Login
+        </button>
+        <div class="form-footer">
+          <a href="#" class="forgot-link">Forgot Password?</a>
+          <span>|</span>
+          <a href="#" class="register-link">Register New Account</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Hospital Login Form -->
+  <div id="hospitalLoginDiv" class="login-form-container" style="display:none;">
+    <div class="login-form-card">
+      <button class="back-btn" onclick="backToMain()">
+        <i class="fas fa-arrow-left"></i> Back
+      </button>
+      <div class="form-header">
+        <i class="fas fa-user-md"></i>
+        <h3>Hospital Management Login</h3>
+      </div>
+      <form id="hospitalLoginForm">
+        <div class="form-group">
+          <label><i class="fas fa-user"></i> Admin Username</label>
+          <input type="text" id="hospitalUsername" placeholder="Enter admin username" required />
+        </div>
+        <div class="form-group">
+          <label><i class="fas fa-lock"></i> Password</label>
+          <input type="password" id="hospitalPassword" placeholder="Enter admin password" required />
+        </div>
+        <button type="submit" class="form-btn">
+          <i class="fas fa-sign-in-alt"></i> Login
+        </button>
+        <div class="form-footer">
+          <a href="#" class="forgot-link">Forgot Password?</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Patient Dashboard -->
+<div id="patientDashboard" class="dashboard">
+  <header class="dashboard-header patient-header">
+    <div class="header-left">
+      <i class="fas fa-hospital-alt"></i>
+      <h2>Patient Dashboard</h2>
+    </div>
+    <div class="header-right">
+      <div class="user-info">
+        <i class="fas fa-user-circle"></i>
+        <span id="patientNameDisplay">John Doe</span>
+      </div>
+      <button class="btn-logout" onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </div>
+  </header>
+
+  <div class="dashboard-content">
+    <nav class="sidebar">
+      <ul class="nav-menu">
+        <li class="nav-item active" onclick="showPatientSection('book')">
+          <i class="fas fa-calendar-plus"></i>
+          <span>Book Appointment</span>
+        </li>
+        <li class="nav-item" onclick="showPatientSection('myAppointments')">
+          <i class="fas fa-calendar-check"></i>
+          <span>My Appointments</span>
+        </li>
+        <li class="nav-item" onclick="showPatientSection('account')">
+          <i class="fas fa-user"></i>
+          <span>Account Details</span>
+        </li>
+        <li class="nav-item" onclick="showPatientSection('slots')">
+          <i class="fas fa-clock"></i>
+          <span>Available Slots</span>
+        </li>
+      </ul>
+    </nav>
+
+    <main class="main-content">
+      <!-- Book Appointment Section -->
+      <div id="patientBook" class="section active">
+        <div class="section-header">
+          <h3><i class="fas fa-calendar-plus"></i> Book an Appointment</h3>
+          <p>Schedule your visit with our healthcare professionals</p>
+        </div>
+        <div class="card">
+          <form id="appointmentForm">
+            <div class="form-row">
+              <div class="form-group">
+                <label><i class="fas fa-user-md"></i> Select Doctor</label>
+                <select id="doctorSelect" required>
+                  <option value="">--Select Doctor--</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label><i class="fas fa-calendar"></i> Select Date</label>
+                <input type="date" id="appointmentDate" required />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label><i class="fas fa-clock"></i> Select Time Slot</label>
+                <select id="timeSlot" required>
+                  <option value="">--Select Slot--</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label><i class="fas fa-notes-medical"></i> Reason for Visit</label>
+                <input type="text" id="visitReason" placeholder="Brief description" required />
+              </div>
+            </div>
+            <button type="submit" class="form-btn">
+              <i class="fas fa-check"></i> Book Appointment
+            </button>
+          </form>
+          <div id="bookingResult" class="alert" style="display:none;"></div>
+        </div>
+      </div>
+
+      <!-- My Appointments Section -->
+      <div id="patientMyAppointments" class="section">
+        <div class="section-header">
+          <h3><i class="fas fa-calendar-check"></i> My Appointments</h3>
+          <p>View and manage your scheduled appointments</p>
+        </div>
+        <div class="card">
+          <div class="appointments-list" id="patientAppointmentsList">
+            <!-- Appointments will be dynamically added here -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Account Details Section -->
+      <div id="patientAccount" class="section">
+        <div class="section-header">
+          <h3><i class="fas fa-user"></i> Account Details</h3>
+          <p>Your personal information and medical records</p>
+        </div>
+        <div class="card">
+          <div class="account-info">
+            <div class="info-row">
+              <div class="info-label"><i class="fas fa-user"></i> Full Name</div>
+              <div class="info-value" id="accountName">John Doe</div>
+            </div>
+            <div class="info-row">
+              <div class="info-label"><i class="fas fa-envelope"></i> Email</div>
+              <div class="info-value" id="accountEmail">johndoe@example.com</div>
+            </div>
+            <div class="info-row">
+              <div class="info-label"><i class="fas fa-phone"></i> Phone</div>
+              <div class="info-value" id="accountPhone">+1 (123) 456-7890</div>
+            </div>
+            <div class="info-row">
+              <div class="info-label"><i class="fas fa-map-marker-alt"></i> Address</div>
+              <div class="info-value" id="accountAddress">123 Main St, City, State 12345</div>
+            </div>
+            <div class="info-row">
+              <div class="info-label"><i class="fas fa-birthday-cake"></i> Date of Birth</div>
+              <div class="info-value" id="accountDOB">January 15, 1990</div>
+            </div>
+            <div class="info-row">
+              <div class="info-label"><i class="fas fa-tint"></i> Blood Group</div>
+              <div class="info-value" id="accountBlood">O+</div>
+            </div>
+          </div>
+          <button class="btn-secondary" style="margin-top: 20px;">
+            <i class="fas fa-edit"></i> Edit Profile
+          </button>
+        </div>
+      </div>
+
+      <!-- Available Slots Section -->
+      <div id="patientSlots" class="section">
+        <div class="section-header">
+          <h3><i class="fas fa-clock"></i> Available Slots</h3>
+          <p>Check doctor availability and time slots</p>
+        </div>
+        <div class="card">
+          <div class="slots-container" id="slotsContainer">
+            <!-- Slots will be dynamically added here -->
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Hospital Management Dashboard -->
+<div id="hospitalDashboard" class="dashboard">
+  <header class="dashboard-header hospital-header">
+    <div class="header-left">
+      <i class="fas fa-hospital-alt"></i>
+      <h2>Hospital Management Dashboard</h2>
+    </div>
+    <div class="header-right">
+      <div class="user-info">
+        <i class="fas fa-user-shield"></i>
+        <span>Admin</span>
+      </div>
+      <button class="btn-logout" onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </div>
+  </header>
+
+  <div class="dashboard-content">
+    <nav class="sidebar">
+      <ul class="nav-menu">
+        <li class="nav-item active" onclick="showHospitalSection('overview')">
+          <i class="fas fa-chart-line"></i>
+          <span>Overview</span>
+        </li>
+        <li class="nav-item" onclick="showHospitalSection('doctors')">
+          <i class="fas fa-user-md"></i>
+          <span>Doctors</span>
+        </li>
+        <li class="nav-item" onclick="showHospitalSection('patients')">
+          <i class="fas fa-users"></i>
+          <span>Patients</span>
+        </li>
+        <li class="nav-item" onclick="showHospitalSection('appointments')">
+          <i class="fas fa-calendar-alt"></i>
+          <span>Appointments</span>
+        </li>
+      </ul>
+    </nav>
+
+    <main class="main-content">
+      <!-- Overview Section -->
+      <div id="hospitalOverview" class="section active">
+        <div class="section-header">
+          <h3><i class="fas fa-chart-line"></i> Dashboard Overview</h3>
+          <p>Quick statistics and insights</p>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon doctors-stat">
+              <i class="fas fa-user-md"></i>
+            </div>
+            <div class="stat-info">
+              <h4 id="totalDoctors">0</h4>
+              <p>Total Doctors</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon patients-stat">
+              <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-info">
+              <h4 id="totalPatients">0</h4>
+              <p>Total Patients</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon appointments-stat">
+              <i class="fas fa-calendar-check"></i>
+            </div>
+            <div class="stat-info">
+              <h4 id="totalAppointments">0</h4>
+              <p>Total Appointments</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon today-stat">
+              <i class="fas fa-calendar-day"></i>
+            </div>
+            <div class="stat-info">
+              <h4 id="todayAppointments">0</h4>
+              <p>Today's Appointments</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 30px;">
+          <h4><i class="fas fa-calendar-day"></i> Today's Schedule</h4>
+          <div class="today-schedule" id="todaySchedule">
+            <!-- Today's appointments will be shown here -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Doctors Section -->
+      <div id="hospitalDoctors" class="section">
+        <div class="section-header">
+          <h3><i class="fas fa-user-md"></i> Doctors Management</h3>
+          <p>Manage doctor profiles and schedules</p>
+        </div>
+        <div class="card">
+          <div class="card-actions">
+            <button class="btn-primary" onclick="showAddDoctorForm()">
+              <i class="fas fa-plus"></i> Add New Doctor
+            </button>
+          </div>
+          
+          <div id="addDoctorForm" class="add-form" style="display:none;">
+            <h4>Add New Doctor</h4>
+            <form id="doctorForm">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Doctor Name</label>
+                  <input type="text" id="doctorName" required />
+                </div>
+                <div class="form-group">
+                  <label>Specialization</label>
+                  <input type="text" id="doctorSpec" required />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Contact Number</label>
+                  <input type="text" id="doctorContact" required />
+                </div>
+                <div class="form-group">
+                  <label>Email</label>
+                  <input type="text" id="doctorEmail" required />
+                </div>
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn-primary">
+                  <i class="fas fa-save"></i> Save Doctor
+                </button>
+                <button type="button" class="btn-secondary" onclick="hideAddDoctorForm()">
+                  <i class="fas fa-times"></i> Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Specialization</th>
+                  <th>Contact</th>
+                  <th>Email</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="doctorsTableBody">
+                <!-- Doctors will be dynamically added here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Patients Section -->
+      <div id="hospitalPatients" class="section">
+        <div class="section-header">
+          <h3><i class="fas fa-users"></i> Patients Management</h3>
+          <p>View and manage patient records</p>
+        </div>
+        <div class="card">
+          <div class="search-bar">
+            <i class="fas fa-search"></i>
+            <input type="text" id="patientSearch" placeholder="Search patients by name..." onkeyup="searchPatients()" />
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Age</th>
+                  <th>Contact</th>
+                  <th>Email</th>
+                  <th>Last Visit</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="patientsTableBody">
+                <!-- Patients will be dynamically added here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Appointments Section -->
+      <div id="hospitalAppointments" class="section">
+        <div class="section-header">
+          <h3><i class="fas fa-calendar-alt"></i> Appointments Management</h3>
+          <p>View and manage all appointments</p>
+        </div>
+        <div class="card">
+          <div class="filter-bar">
+            <div class="form-group">
+              <label>Filter by Date</label>
+              <input type="date" id="appointmentFilter" onchange="filterAppointments()" />
+            </div>
+            <div class="form-group">
+              <label>Filter by Doctor</label>
+              <select id="doctorFilter" onchange="filterAppointments()">
+                <option value="">All Doctors</option>
+              </select>
+            </div>
+            <button class="btn-secondary" onclick="clearFilters()">
+              <i class="fas fa-redo"></i> Clear Filters
+            </button>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table" id="appointmentsTable">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Patient Name</th>
+                  <th>Doctor</th>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>Reason</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="appointmentsTableBody">
+                <!-- Appointments will be dynamically added here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="main-footer">
+  <div class="footer-content">
+    <p>&copy; 2024 Hospital Management System. All rights reserved.</p>
+    <div class="footer-links">
+      <a href="#"><i class="fas fa-shield-alt"></i> Privacy Policy</a>
+      <a href="#"><i class="fas fa-file-contract"></i> Terms of Service</a>
+      <a href="#"><i class="fas fa-phone"></i> Contact Support</a>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
