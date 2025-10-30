@@ -87,68 +87,118 @@ async function start() {
   });
 
   app.post('/api/doctors', async (req, res) => {
-    const doc = req.body;
-    doc.id = await getNextId('doctors');
-    await db.collection('doctors').insertOne(doc);
-    res.json(doc);
+    try {
+      const doc = req.body;
+      doc.id = await getNextId('doctors');
+      await db.collection('doctors').insertOne(doc);
+      res.json(doc);
+    } catch (error) {
+      console.error('Error adding doctor:', error);
+      res.status(500).json({ error: 'Failed to add doctor' });
+    }
   });
 
   app.delete('/api/doctors/:id', async (req, res) => {
-    const id = parseInt(req.params.id, 10);
-    await db.collection('doctors').deleteOne({ id });
-    res.json({ success: true });
+    try {
+      const id = parseInt(req.params.id, 10);
+      await db.collection('doctors').deleteOne({ id });
+      res.json({ success: true });
+    } catch (error) {
+      console.error('Error deleting doctor:', error);
+      res.status(500).json({ error: 'Failed to delete doctor' });
+    }
   });
 
   // Patients
   app.get('/api/patients', async (req, res) => {
-    const patients = await db.collection('patients').find().toArray();
-    res.json(patients);
+    try {
+      const patients = await db.collection('patients').find().toArray();
+      res.json(patients);
+    } catch (error) {
+      console.error('Error fetching patients:', error);
+      res.status(500).json({ error: 'Failed to fetch patients' });
+    }
   });
 
   app.get('/api/patients/:id', async (req, res) => {
-    const id = parseInt(req.params.id, 10);
-    const patient = await db.collection('patients').findOne({ id });
-    res.json(patient || {});
+    try {
+      const id = parseInt(req.params.id, 10);
+      const patient = await db.collection('patients').findOne({ id });
+      res.json(patient || {});
+    } catch (error) {
+      console.error('Error fetching patient:', error);
+      res.status(500).json({ error: 'Failed to fetch patient' });
+    }
   });
 
   // Appointments
   app.get('/api/appointments', async (req, res) => {
-    const appointments = await db.collection('appointments').find().toArray();
-    res.json(appointments);
+    try {
+      const appointments = await db.collection('appointments').find().toArray();
+      res.json(appointments);
+    } catch (error) {
+      console.error('Error fetching appointments:', error);
+      res.status(500).json({ error: 'Failed to fetch appointments' });
+    }
   });
 
   app.post('/api/appointments', async (req, res) => {
-    const apt = req.body;
-    apt.id = await getNextId('appointments');
-    apt.status = apt.status || 'Confirmed';
-    await db.collection('appointments').insertOne(apt);
-    res.json(apt);
+    try {
+      const apt = req.body;
+      apt.id = await getNextId('appointments');
+      apt.status = apt.status || 'Confirmed';
+      await db.collection('appointments').insertOne(apt);
+      res.json(apt);
+    } catch (error) {
+      console.error('Error creating appointment:', error);
+      res.status(500).json({ error: 'Failed to create appointment' });
+    }
   });
 
   app.delete('/api/appointments/:id', async (req, res) => {
-    const id = parseInt(req.params.id, 10);
-    await db.collection('appointments').deleteOne({ id });
-    res.json({ success: true });
+    try {
+      const id = parseInt(req.params.id, 10);
+      await db.collection('appointments').deleteOne({ id });
+      res.json({ success: true });
+    } catch (error) {
+      console.error('Error deleting appointment:', error);
+      res.status(500).json({ error: 'Failed to delete appointment' });
+    }
   });
 
   app.put('/api/appointments/:id/status', async (req, res) => {
-    const id = parseInt(req.params.id, 10);
-    const { status } = req.body;
-    await db.collection('appointments').updateOne({ id }, { $set: { status } });
-    const updated = await db.collection('appointments').findOne({ id });
-    res.json(updated);
+    try {
+      const id = parseInt(req.params.id, 10);
+      const { status } = req.body;
+      await db.collection('appointments').updateOne({ id }, { $set: { status } });
+      const updated = await db.collection('appointments').findOne({ id });
+      res.json(updated);
+    } catch (error) {
+      console.error('Error updating appointment status:', error);
+      res.status(500).json({ error: 'Failed to update appointment status' });
+    }
   });
 
   // Current user
   app.get('/api/currentUser', async (req, res) => {
-    const user = await db.collection('currentUser').findOne({}, { projection: { _id: 0 } });
-    res.json(user || {});
+    try {
+      const user = await db.collection('currentUser').findOne({}, { projection: { _id: 0 } });
+      res.json(user || {});
+    } catch (error) {
+      console.error('Error fetching current user:', error);
+      res.status(500).json({ error: 'Failed to fetch current user' });
+    }
   });
 
   app.put('/api/currentUser', async (req, res) => {
-    const user = req.body;
-    await db.collection('currentUser').updateOne({}, { $set: user }, { upsert: true });
-    res.json(user);
+    try {
+      const user = req.body;
+      await db.collection('currentUser').updateOne({}, { $set: user }, { upsert: true });
+      res.json(user);
+    } catch (error) {
+      console.error('Error updating current user:', error);
+      res.status(500).json({ error: 'Failed to update current user' });
+    }
   });
 
   app.listen(PORT, () => {
