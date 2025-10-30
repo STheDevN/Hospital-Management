@@ -12,6 +12,9 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
+// Serve static files (HTML, CSS, JS)
+app.use(express.static(__dirname));
+
 let db;
 
 async function getNextId(collectionName) {
@@ -56,16 +59,31 @@ async function seedIfEmpty() {
 }
 
 async function start() {
-  const client = new MongoClient(MONGO_URL);
-  await client.connect();
-  db = client.db(DB_NAME);
+  try {
+    console.log('🔌 Connecting to MongoDB at:', MONGO_URL);
+    const client = new MongoClient(MONGO_URL);
+    await client.connect();
+    console.log('✅ Connected to MongoDB successfully');
+    
+    db = client.db(DB_NAME);
+    console.log('📊 Using database:', DB_NAME);
 
-  await seedIfEmpty();
+    await seedIfEmpty();
+    console.log('🌱 Database seeding completed');
+  } catch (error) {
+    console.error('❌ Database connection failed:', error);
+    throw error;
+  }
 
   // Doctors
   app.get('/api/doctors', async (req, res) => {
-    const doctors = await db.collection('doctors').find().toArray();
-    res.json(doctors);
+    try {
+      const doctors = await db.collection('doctors').find().toArray();
+      res.json(doctors);
+    } catch (error) {
+      console.error('Error fetching doctors:', error);
+      res.status(500).json({ error: 'Failed to fetch doctors' });
+    }
   });
 
   app.post('/api/doctors', async (req, res) => {
