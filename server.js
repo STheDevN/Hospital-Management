@@ -1,11 +1,12 @@
+require('dotenv').config();
 const express = require('express');
 const { MongoClient } = require('mongodb');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
-const MONGO_URL = 'mongodb://localhost:27017/';
-const DB_NAME = 'hms';
-const PORT = 3000;
+const MONGO_URL = process.env.MONGO_URL || 'mongodb://localhost:27017/';
+const DB_NAME = process.env.DB_NAME || 'hms';
+const PORT = process.env.PORT || 3000;
 
 const app = express();
 app.use(cors());
